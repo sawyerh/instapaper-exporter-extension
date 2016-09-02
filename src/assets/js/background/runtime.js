@@ -1,3 +1,5 @@
+let statusInterval;
+
 function save(highlights) {
   let htmlParts = [`<html><head>
     <meta charset="utf-8">
@@ -66,13 +68,10 @@ function save(highlights) {
 }
 
 function openExport(filename) {
-  // open the file that now contains the blob - calling
-  // `openPage` again if we had to split up the image
   let url = ('filesystem:chrome-extension://' +
                  chrome.i18n.getMessage('@@extension_id') +
                  '/temporary/' + filename);
 
-  // chrome.tabs.create({url: url});
   chrome.downloads.download({
     filename: filename,
     url: url,
@@ -80,34 +79,38 @@ function openExport(filename) {
   });
 }
 
+function sendTabMessage(tab) {
+  chrome.tabs.sendMessage(tab.id, {message: 'scrape_page'});
+}
+
 function handleActionClick(e) {
   chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-    chrome.tabs.sendMessage(tabs[0].id, {message: 'scrape_page'});
+    let activeTab = tabs[0];
+
+    if (activeTab.url.indexOf('instapaper.com/notes') >= 0) {
+      sendTabMessage(activeTab);
+    } else {
+      chrome.tabs.create({url: 'https://instapaper.com/notes'}, handleNotesTabCreate);
+    }
   });
 }
 
+function handleNotesTabCreate(tab) {
+  statusInterval = window.setInterval(() => {
+    chrome.tabs.get(tab.id, updatedTab => {
+      if (updatedTab.status === 'complete') {
+        sendTabMessage(tab);
+        window.clearInterval(statusInterval);
+      }
+    });
+  }, 100);
+}
+
 function handleInstalled(details) {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    var rule = {
-      conditions: [
-        new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: {
-            urlContains: 'instapaper.com/notes',
-            schemes: ['https']
-          }
-        })
-      ],
-      actions: [new chrome.declarativeContent.ShowPageAction()]
-    };
-
-    chrome.declarativeContent.onPageChanged.addRules([rule]);
-  });
-
   if (details.reason === "install") {
-    // TODO: Open tab with instructions
-    // chrome.tabs.create({
-    //   url: 'http://www.dropmark.com/extension/welcome'
-    // });
+    chrome.tabs.create({
+      url: 'https://github.com/sawyerh/instapaper-exporter-extension/blob/master/README.md'
+    });
   }
 }
 
@@ -117,7 +120,7 @@ function handleMessage(request, sender, callback) {
   }
 }
 
-chrome.pageAction.onClicked.addListener(handleActionClick);
+chrome.browserAction.onClicked.addListener(handleActionClick);
 chrome.runtime.onMessage.addListener(handleMessage);
 
 if (chrome.runtime.onInstalled)

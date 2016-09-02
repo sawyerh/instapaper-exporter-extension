@@ -1,7 +1,7 @@
 {
-  "name": "instapaper-exporter-extension",
+  "name": "instapaper-highlights-exporter-extension",
   "version": "1.0.0",
-  "description": "Scrape Instapaper notes page",
+  "description": "Scrape Instapaper highlights page",
   "scripts": {
     "dev": "NODE_ENV=development webpack --progress --colors --watch & grunt",
     "predev": "npm install",

@@ -19,14 +19,14 @@
       "js": ["/assets/js/content-script.min.js"]
     }
   ],
-  "page_action": {
+  "browser_action": {
     "default_icon": "/assets/images/action-icon-38.png",
     "default_title": "Export Instapaper notes"
   },
   "permissions": [
     "https://www.instapaper.com/",
-    "declarativeContent",
-    "downloads"
+    "downloads",
+    "tabs"
   ],
   "icons": {
     "16": "assets/images/icon-16.png",
