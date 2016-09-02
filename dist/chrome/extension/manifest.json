@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "version": "1.0.0.0",
   "name": "Instapaper highlights exporter",
-  "description": "Visit instapaper.com/notes and click the extension icon to exports your highlights from Instapaper.",
+  "description": "Visit instapaper.com/notes and click the extension icon to export your highlights from Instapaper.",
   "applications": {
     "gecko": {
       "id": "extension@instapaper-notes-exporter.com",
