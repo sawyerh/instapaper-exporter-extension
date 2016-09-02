@@ -1,14 +1,57 @@
 function save(highlights) {
-  console.log(arguments);
-  console.log('save', highlights);
-  const json = JSON.stringify(highlights);
-  console.log(json);
-  const blob = new Blob([json], {
-    encoding: "UTF-8",
-    type: "application/json;charset=UTF-8"
+  let htmlParts = [`<html><head>
+    <meta charset="utf-8">
+    <title>Instapaper Highlights Export</title>
+    <style type="text/css">
+      body {
+        max-width: 800px;
+        margin: 50px auto;
+        line-height: 1.4;
+      }
+      h1 {
+        margin: 50px 0 1em;
+      }
+      h2 {
+        font-size: 1em;
+        font-weight: normal;
+        margin: 3em 0 1em;
+      }
+      blockquote {
+        background: #FFFCEE;
+        padding: 15px;
+        margin: 0 0 10px;
+        display: block;
+        font-size: 1.2em;
+      }
+      code {
+        background: #F7F7F7;
+        padding: 10px;
+      }
+      .json-export {
+        width: 100%;
+        font-family: monospace;
+      }
+    </style>
+  </head><body>
+  <a href="#html">HTML</a> &bull; <a href="#json">JSON</a>
+  <hr />
+  Extension by <a href="http://www.sawyerh.com">Sawyer Hollenshead</a>
+  <hr />
+  <h1 id="html">HTML Export</h1>`];
+
+  highlights.forEach(entry => {
+    let part = `<h2><a href="${entry.source}" class="title">${entry.title}</a></h2>
+                <blockquote class="highlight">${entry.highlight}</blockquote>`;
+    if (entry.note) part += `<small class="note"><strong>Note:</strong> ${entry.note}</small>`;
+    htmlParts.push(part);
   });
+
+  htmlParts.push(`<h1 id="json">JSON Export</h1><textarea class="json-export" rows="10">${JSON.stringify(highlights)}</textarea>`);
+  htmlParts.push('</body></html>');
+
+  const blob = new Blob(htmlParts, {type: "text/html"});
   const size = blob.size + (1024 / 2);
-  const filename = `instapaper_highlights_export-${Date.now()}.json`;
+  const filename = `instapaper_highlights_export-${Date.now()}.html`;
 
   // create a blob for writing to a file
   var reqFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
