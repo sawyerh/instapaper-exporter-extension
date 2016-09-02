@@ -29,12 +29,17 @@ function openExport(filename) {
                  chrome.i18n.getMessage('@@extension_id') +
                  '/temporary/' + filename);
 
-  chrome.tabs.create({url: url});
+  // chrome.tabs.create({url: url});
+  chrome.downloads.download({
+    filename: filename,
+    url: url,
+    saveAs: true
+  });
 }
 
 function handleActionClick(e) {
   chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-    chrome.tabs.sendMessage(tabs[0].id, {message: 'scrape_page'}, save);
+    chrome.tabs.sendMessage(tabs[0].id, {message: 'scrape_page'});
   });
 }
 
@@ -63,12 +68,10 @@ function handleInstalled(details) {
   }
 }
 
-/**
- * Handle any runtime messages that aren't handled elsewhere.
- * https://developer.chrome.com/extensions/runtime#event-onMessage
- */
- function handleMessage(request, sender, callback) {
-  console.log('runtime handleMessage');
+function handleMessage(request, sender, callback) {
+  if (request.message === 'save_highlights') {
+    save(request.highlights);
+  }
 }
 
 chrome.pageAction.onClicked.addListener(handleActionClick);

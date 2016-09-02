@@ -25,7 +25,8 @@
   },
   "permissions": [
     "https://www.instapaper.com/",
-    "declarativeContent"
+    "declarativeContent",
+    "downloads"
   ],
   "icons": {
     "16": "assets/images/icon-16.png",
