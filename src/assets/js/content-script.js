@@ -19,6 +19,7 @@ function scrapePage(parent, callback) {
   if (nextPage) {
     scrapeNextPage(nextPage.getAttribute('href'), callback);
   } else {
+    console.log('callback', highlights);
     callback(highlights);
   }
 }
@@ -31,11 +32,8 @@ function scrapeNextPage(url, callback) {
 }
 
 function handleExtensionMessage(request, sender, callback) {
-  console.log('handleExtensionMessage', request);
-  if (request.message === 'scrape_page') {
+  if (request.message === 'scrape_page')
     scrapePage(document, callback);
-    console.log(highlights);
-  }
 }
 
 chrome.runtime.onMessage.addListener(handleExtensionMessage);
