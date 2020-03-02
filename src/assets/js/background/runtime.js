@@ -4,7 +4,7 @@ function save(highlights) {
   let htmlParts = [`<html><head>
     <meta charset="utf-8">
     <title>Instapaper Highlights Export</title>
-    <style type="text/css">
+    <style type="text/css"> 
       body {
         max-width: 800px;
         margin: 50px auto;
@@ -33,9 +33,13 @@ function save(highlights) {
         width: 100%;
         font-family: monospace;
       }
+      .roam-export {
+        width: 100%;
+        font-family: monospace;
+      }
     </style>
   </head><body>
-  <a href="#html">HTML</a> &bull; <a href="#json">JSON</a>
+  <a href="#html">HTML</a> &bull; <a href="#json">JSON</a> &bull; <a href="#roam">Roam</a>
   <hr />
   Extension by <a href="http://www.sawyerh.com">Sawyer Hollenshead</a>
   <hr />
@@ -50,6 +54,14 @@ function save(highlights) {
 
   htmlParts.push(`<h1 id="json">JSON Export</h1><textarea class="json-export" rows="10">${JSON.stringify(highlights)}</textarea>`);
   htmlParts.push('</body></html>');
+  // Roam
+  htmlParts.push(`<h1 id="roam">Roam Export</h1><textarea class="roam-export" rows="10">`);
+  highlights.forEach(entry => {
+    let part = `${entry.highlight}\n`;
+    if (entry.note) part += `Note:: ${entry.note} [[${entry.title}]]\n`;
+    htmlParts.push(part);
+  });
+  htmlParts.push('</textarea></body></html>');
 
   const blob = new Blob(htmlParts, {type: "text/html"});
   const size = blob.size + (1024 / 2);
